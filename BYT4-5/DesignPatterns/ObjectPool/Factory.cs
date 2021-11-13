@@ -35,7 +35,7 @@ namespace DesignPatterns.ObjectPool
             {
                 Equipment.equipmentCounter--;
                 objPool.Enqueue(equipment);
-                Console.WriteLine("Equipment was deleted and added to pool.");
+                Console.WriteLine("Equipment was transfered to pool.");
             } else
             {
                 Equipment.equipmentCounter--;

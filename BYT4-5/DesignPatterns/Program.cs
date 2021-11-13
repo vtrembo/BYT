@@ -46,10 +46,9 @@ namespace DesignPatterns
 
             Console.WriteLine("Current amount of objects in pool: " + ObjectPool.Factory.objPool.Count);
             Console.WriteLine("Current amount of acive equipment: " + ObjectPool.Equipment.equipmentCounter);
-            Equipment eq1 = new Equipment();
-            Equipment eq2 = new Equipment();
-            Equipment eq3 = new Equipment();
-            Console.WriteLine("Added 3 active equipments");
+            Equipment eq1 = factory.GetEquipment();
+            Equipment eq2 = factory.GetEquipment();
+            Equipment eq3 = factory.GetEquipment(); 
             Console.WriteLine("Current amount of objects in pool: " + ObjectPool.Factory.objPool.Count);
             Console.WriteLine("Current amount of acive equipment: " + ObjectPool.Equipment.equipmentCounter);
             Equipment eq4 = factory.GetEquipment();
