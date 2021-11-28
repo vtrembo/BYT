@@ -21,7 +21,7 @@ public class PointTest {
 		assertEquals(4, res1.x);
 		assertEquals(-21, res1.y);
 		assertEquals(-3, res2.x);
-		assertEquals(12, res2.x);
+		assertEquals(12, res2.y);
 	}
 	
 	public void testSub() {
@@ -29,9 +29,9 @@ public class PointTest {
 		Point res2 = p1.sub(p3);
 		
 		assertEquals(4, res1.x);
-		assertEquals(-21, res1.y);
-		assertEquals(-3, res2.x);
-		assertEquals(12, res2.x);
+		assertEquals(21, res1.y);
+		assertEquals(3, res2.x);
+		assertEquals(12, res2.y);
 	}
 
 }

@@ -24,41 +24,105 @@ public class BankTest {
 
 	@Test
 	public void testGetName() {
-		fail("Write test case here");
+		assertEquals("SweBank", SweBank.getName());
+		assertEquals("Nordea", Nordea.getName());
+		assertEquals("DanskeBank", DanskeBank.getName());
 	}
 
 	@Test
 	public void testGetCurrency() {
-		fail("Write test case here");
+		assertEquals(SEK, SweBank.getCurrency());
+		assertEquals(SEK, Nordea.getCurrency());
+		assertEquals(DKK, DanskeBank.getCurrency());
 	}
 
 	@Test
 	public void testOpenAccount() throws AccountExistsException, AccountDoesNotExistException {
-		fail("Write test case here");
+		SweBank.openAccount("Someone");
+		try {
+			//check if account exists
+			SweBank.openAccount("Ulrika");
+		}catch (AccountExistsException ignored){
+			return;
+		}
+		fail("Shouldn't allow to open accounts with same id");  // should fail
 	}
 
 	@Test
 	public void testDeposit() throws AccountDoesNotExistException {
-		fail("Write test case here");
+		SweBank.deposit("Ulrika", new Money(100000, SEK)); // should fail
+		assertEquals(Integer.valueOf(100000), SweBank.getBalance("Ulrika"));
+		try {
+			SweBank.deposit("UnexistingGuy", new Money(100000, SEK));
+		}catch (AccountDoesNotExistException ignored){
+			return;
+		}
+		fail("Shouldn't allow to deposit on account that doesn't exist");
 	}
 
 	@Test
 	public void testWithdraw() throws AccountDoesNotExistException {
-		fail("Write test case here");
+		SweBank.deposit("Ulrika", new Money(100000, SEK));
+		SweBank.withdraw("Ulrika", new Money(10000, SEK));
+		assertEquals(Integer.valueOf(90000), SweBank.getBalance("Ulrika")); // should fail
+		try {
+			SweBank.withdraw("UnexistingGuy", new Money(10000, SEK));
+		}catch (AccountDoesNotExistException ignored){
+			return;
+		}
+		fail("Shouldn't allow to withdraw from account that doesn't exist");
 	}
-	
+
 	@Test
 	public void testGetBalance() throws AccountDoesNotExistException {
-		fail("Write test case here");
+		assertEquals(Integer.valueOf(0), SweBank.getBalance("Ulrika"));
+		SweBank.deposit("Ulrika", new Money(100000, SEK));
+		assertEquals(Integer.valueOf(100000), SweBank.getBalance("Ulrika"));
+		try {
+			SweBank.getBalance("UnexistingGuy");
+		}catch (AccountDoesNotExistException ignored){
+			return;
+		}
+		fail("Shouldn't allow to look at the balance of account that doesn't exist");
 	}
-	
+
 	@Test
 	public void testTransfer() throws AccountDoesNotExistException {
-		fail("Write test case here");
+		Nordea.deposit("Bob", new Money(500000, SEK));
+		Nordea.transfer("Bob", SweBank, "Bob", new Money(300000, SEK));
+		assertEquals(Integer.valueOf(300000), SweBank.getBalance("Bob"));
+		assertEquals(Integer.valueOf(200000), Nordea.getBalance("Bob"));
+		SweBank.transfer("Bob", "Ulrika", new Money(200000, SEK));
+		assertEquals(Integer.valueOf(100000), SweBank.getBalance("Bob")); // failed
+		assertEquals(Integer.valueOf(200000), SweBank.getBalance("Ulrika"));
+		try{
+			SweBank.transfer("UnexistingGuy", "Ulrika", new Money(100000, SEK));
+		}catch (AccountDoesNotExistException exc){
+			try{
+				SweBank.transfer("Ulrika", "UnexistingGuy", new Money(100000, SEK));
+			}catch (AccountDoesNotExistException ignored){
+				return;
+			}
+		}
+		fail("Shouldn't allow to send money from/to account that doesn't exist");
 	}
-	
+
+
 	@Test
 	public void testTimedPayment() throws AccountDoesNotExistException {
-		fail("Write test case here");
+		SweBank.deposit("Bob", new Money(500000, SEK));
+		SweBank.deposit("Ulrika", new Money(500000, SEK));
+		SweBank.addTimedPayment("Bob", "first", 0, 0, new Money(10000, SEK), SweBank, "Ulrika");
+		for(int timer = 0; timer < 15; ++timer){
+			SweBank.tick();
+			if(timer==3){
+				assertEquals(Integer.valueOf(460000), SweBank.getBalance("Bob")); // failed
+				assertEquals(Integer.valueOf(540000), SweBank.getBalance("Ulrika"));
+				SweBank.removeTimedPayment("Bob", "first");
+				SweBank.addTimedPayment("Ulrika", "second", 2, 3, new Money(30000, SEK), SweBank, "Bob");
+			}
+		}		
+		assertEquals(Integer.valueOf(450000), SweBank.getBalance("Ulrika"));
+		assertEquals(Integer.valueOf(550000), SweBank.getBalance("Bob"));
 	}
 }
